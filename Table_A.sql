@@ -1,4 +1,10 @@
 -- Active: 1733124735108@@dpg-ct6kb61u0jms7399gihg-a.singapore-postgres.render.com@5432
+DROP TABLE IF EXISTS Items;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Inventory;
+DROP TABLE IF EXISTS Products;
+DROP TABLE IF EXISTS User;
+
 CREATE TABLE User (
     User_ID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(100),
