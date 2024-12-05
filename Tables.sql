@@ -29,7 +29,6 @@ CREATE TABLE Items (
     Order_Item_ID INT PRIMARY KEY,
     Order_ID INT,
     Product_ID INT,
-    Product_Name VARCHAR(255),
     Quantity INT,
     Price DECIMAL(10, 2),
     FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
