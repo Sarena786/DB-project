@@ -45,27 +45,27 @@ VALUES (1, 30),
 
 (SELECT COALESCE(MAX(Order_Item_ID), 0) + 1 FROM Items)
 
-CREATE SEQUENCE items_order_item_id_seq START 1;
+-- CREATE SEQUENCE items_order_item_id_seq START 1;
 
-ALTER TABLE Items ALTER COLUMN Order_Item_ID SET DEFAULT nextval('items_order_item_id_seq');
-CREATE OR REPLACE FUNCTION insert_items_trigger()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO Items (Order_ID, Product_ID, Quantity, Price)
-    VALUES (
-        NEW.Order_ID, 
-        NEW.Product_ID, 
-        1,  
-        (SELECT Price FROM Products WHERE Product_ID = NEW.Product_ID)
-    );
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+-- ALTER TABLE Items ALTER COLUMN Order_Item_ID SET DEFAULT nextval('items_order_item_id_seq');
+-- CREATE OR REPLACE FUNCTION insert_items_trigger()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--     INSERT INTO Items (Order_ID, Product_ID, Quantity, Price)
+--     VALUES (
+--         NEW.Order_ID, 
+--         NEW.Product_ID, 
+--         1,  
+--         (SELECT Price FROM Products WHERE Product_ID = NEW.Product_ID)
+--     );
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER after_order_insert
-AFTER INSERT ON Orders
-FOR EACH ROW
-EXECUTE FUNCTION insert_items_trigger();
+-- CREATE TRIGGER after_order_insert
+-- AFTER INSERT ON Orders
+-- FOR EACH ROW
+-- EXECUTE FUNCTION insert_items_trigger();
 
 INSERT INTO Orders (Order_ID, User_ID, Order_Date, Product_ID, Total_Price, Status)
 VALUES (1, 1, '2024-01-01', 1, 350.00, 'Completed'),
