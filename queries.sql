@@ -9,7 +9,7 @@ SELECT * FROM Inventory;
 
 SELECT o.Order_ID, o.Order_Date, o.Total_Price, u.Name, u.Email
 FROM Orders o
-JOIN User u ON o.User_ID = u.User_ID;
+JOIN users u ON o.User_ID = u.User_ID;
 
 UPDATE Inventory
 SET Stock_Quantity = Inventory.Stock_Quantity - i.Quantity
