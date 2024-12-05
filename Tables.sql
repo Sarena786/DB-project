@@ -5,7 +5,8 @@ CREATE TABLE Users (
     Name VARCHAR(100),
     Email VARCHAR(100) UNIQUE,
     Password VARCHAR(100),
-    Phone_Number VARCHAR(15)
+    Phone_Number VARCHAR(15),
+    Address VARCHAR(255)
 );
         
 DROP TABLE products;
@@ -40,3 +41,13 @@ CREATE TABLE Inventory (
     Stock_Quantity INT,
     FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
 );
+
+CREATE TABLE User_Total_Spent (
+    User_ID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Email VARCHAR(100),
+    Phone_Number VARCHAR(15),
+    Address VARCHAR(255),
+    Total_Spent DECIMAL(10, 2)
+);
+
