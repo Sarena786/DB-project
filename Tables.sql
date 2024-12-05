@@ -22,7 +22,8 @@ CREATE TABLE Orders (
     Order_Date DATE,
     Total_Price DECIMAL(10, 2),
     Status VARCHAR(50),
-    FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID),
+    Foreign Key (Branch_ID) REFERENCES Branches(Branch_ID)
 );
 
 CREATE TABLE Items (
@@ -38,9 +39,9 @@ CREATE TABLE Items (
 CREATE TABLE Inventory (
     Product_ID INT PRIMARY KEY,
     Stock_Quantity INT,
-    FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
+    FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
+    Foreign Key (Branch_ID) REFERENCES Branches(Branch_ID)
 );
-
 CREATE TABLE User_Total_Spent (
     User_ID INT PRIMARY KEY,
     Name VARCHAR(100),

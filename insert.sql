@@ -15,16 +15,17 @@ VALUES (1, 'Gray Cat Plushie', 350.00),
        (6, 'Beige Bear Plushie', 400.00);
 
 
-INSERT INTO Orders (Order_ID, User_ID, Order_Date, Total_Price, Status)
+INSERT INTO Orders (Order_ID, User_ID, Branch_ID, Order_Date, Total_Price, Status)
 VALUES
-    (1, 1, '2024-01-01', 350.00, 'Completed'),
-    (2, 1, '2024-01-02', 350.00, 'Processing'),
-    (3, 2, '2024-01-03', 400.00, 'Completed'),
-    (4, 2, '2024-01-04', 400.00, 'Processing'),
-    (5, 3, '2024-01-05', 350.00, 'Completed'),
-    (6, 3, '2024-01-06', 350.00, 'Completed'),
-    (7, 4, '2024-01-07', 400.00, 'Completed'),
-    (8, 4, '2024-01-08', 400.00, 'Processing');
+    (1, 1, 1, '2024-01-01', 350.00, 'Completed'),
+    (2, 1, 1, '2024-01-02', 350.00, 'Processing'),
+    (3, 2, 1, '2024-01-03', 400.00, 'Completed'),
+    (4, 2, 1, '2024-01-04', 400.00, 'Processing'),
+    (5, 3, 1, '2024-01-05', 350.00, 'Completed'),
+    (6, 3, 1, '2024-01-06', 350.00, 'Completed'),
+    (7, 4, 1, '2024-01-07', 400.00, 'Completed'),
+    (8, 4, 1, '2024-01-08', 400.00, 'Processing');
+
 
 
 
@@ -35,13 +36,15 @@ VALUES
 
 
 
-INSERT INTO Inventory (Product_ID, Stock_Quantity)
-VALUES (1, 30),
-       (2, 30),
-       (3, 30),
-       (4, 30),
-       (5, 30),
-       (6, 30);
+INSERT INTO Inventory (Product_ID, Branch_ID, Stock_Quantity)
+VALUES
+    (1, 1, 50),  
+    (2, 2, 30),  
+    (3, 3, 40), 
+    (4, 4, 20), 
+    (5, 5, 10), 
+    (6, 1, 15);
+
 
 INSERT INTO User_Total_Spent (User_ID, Name, Email, Phone_Number, Address, Total_Spent)
 SELECT 
@@ -60,4 +63,7 @@ GROUP BY
 --to find the total price of the orders for each user
 
 INSERT INTO Branches (Branch_ID,Branch_Name, Location, Manager, Phone_Number)
-VALUES ('1','Chiang Mai', 'Maya Lifestyle Mall', 'John Doe', '098-765-4321');
+VALUES ('1','Chiang Mai', 'Maya Lifestyle Mall', 'John Doe', '098-765-4321'),
+         ('2','Bangkok', 'Siam Paragon', 'Jane Doe', '098-765-4321'),
+         ('3','Phuket', 'Jungceylon', 'John Smith', '098-765-4321'),
+         ('4','Pattaya', 'Central Festival', 'Jane Smith', '098-765-4321');
