@@ -57,3 +57,7 @@ JOIN
     Orders o ON u.User_ID = o.User_ID
 GROUP BY 
     u.User_ID, u.Name, u.Email, u.Phone_Number, u.Address;
+--to find the total price of the orders for each user
+
+INSERT INTO Branches (Branch_ID,Branch_Name, Location, Manager, Phone_Number)
+VALUES ('1','Chiang Mai', 'Maya Lifestyle Mall', 'John Doe', '098-765-4321');

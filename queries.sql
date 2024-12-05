@@ -30,3 +30,16 @@ FROM TotalQuantities t
 WHERE Inventory.Product_ID = t.Product_ID
   AND Inventory.Stock_Quantity >= t.Total_Quantity;
 
+SELECT b.Branch_Name, p.Product_ID, p.Price, i.Stock_Quantity --selecting the branch name, product id, price, and stock quantity
+FROM Inventory i
+JOIN Products p ON i.Product_ID = p.Product_ID
+JOIN Branches b ON i.Branch_ID = b.Branch_ID;
+
+SELECT o.Order_ID, o.Total_Price, o.Status, b.Branch_Name --selecting the order id, total price, status, and branch name
+FROM Orders o
+JOIN Branches b ON o.Branch_ID = b.Branch_ID
+WHERE b.Branch_ID = 1;
+
+UPDATE Inventory --updating the stock quantity of product 101 in branch 1
+SET Stock_Quantity = Stock_Quantity - 5
+WHERE Product_ID = 101 AND Branch_ID = 1;

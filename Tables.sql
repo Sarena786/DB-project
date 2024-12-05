@@ -50,3 +50,11 @@ CREATE TABLE User_Total_Spent (
     Total_Spent DECIMAL(10, 2)
 );
 
+CREATE TABLE Branches  (
+    Branch_ID INT PRIMARY KEY ,
+    Branch_Name VARCHAR(100),
+    Location VARCHAR(255),
+    Manager VARCHAR(100),
+    Phone_Number VARCHAR(15)
+);
+
