@@ -1,11 +1,8 @@
-SELECT * FROM Orders WHERE User_ID = 1;
-
-
-SELECT * FROM Items WHERE Order_ID = 1;
-
-
+SELECT * FROM Orders;
+SELECT * FROM Items;
+SELECT DISTINCT Product_ID FROM Items;
+SELECT DISTINCT Product_ID FROM Inventory;
 SELECT * FROM Inventory;
-
 
 SELECT o.Order_ID, o.Order_Date, o.Total_Price, u.Name, u.Email
 FROM Orders o
@@ -19,16 +16,6 @@ WHERE Inventory.Product_ID = i.Product_ID
 
 
 
-WITH TotalQuantities AS (
-    SELECT Product_ID, SUM(Quantity) AS Total_Quantity
-    FROM Items
-    GROUP BY Product_ID
-)
-UPDATE Inventory
-SET Stock_Quantity = Inventory.Stock_Quantity - t.Total_Quantity
-FROM TotalQuantities t
-WHERE Inventory.Product_ID = t.Product_ID
-  AND Inventory.Stock_Quantity >= t.Total_Quantity;
 
 SELECT b.Branch_Name, p.Product_ID, p.Price, i.Stock_Quantity --selecting the branch name, product id, price, and stock quantity
 FROM Inventory i -- see if the branch have the stock for an item

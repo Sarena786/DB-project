@@ -1,15 +1,23 @@
--- Active: 1733294799547@@dpg-ct6kb61u0jms7399gihg-a@5432
+-- Active: 1733124735108@@dpg-ct6kb61u0jms7399gihg-a.singapore-postgres.render.com@5432@my_database@public
+
+DROP Table users;
+DROP Table products;
+DROP Table inventory;
+DROP Table orders;
+DROP Table items;
+Drop Table user_total_spent;
 
 CREATE TABLE Users (
     User_ID INT PRIMARY KEY,
     Name VARCHAR(100),
     Email VARCHAR(100) UNIQUE,
     Password VARCHAR(100),
-    Phone_Number VARCHAR(15),
-    Address VARCHAR(255)
+    Phone_Number VARCHAR(15)
 );
-        
-DROP TABLE products;
+
+ALTER TABLE users
+    ADD COLUMN Address VARCHAR(255);
+    
 CREATE TABLE Products (
     Product_ID INT PRIMARY KEY,
     Product_Name VARCHAR(255),
@@ -20,6 +28,7 @@ CREATE TABLE Orders (
     Order_ID INT PRIMARY KEY,
     User_ID INT,
     Order_Date DATE,
+    Product_ID INT,
     Total_Price DECIMAL(10, 2),
     Status VARCHAR(50),
     FOREIGN KEY (User_ID) REFERENCES Users(User_ID),
@@ -49,6 +58,7 @@ CREATE TABLE User_Total_Spent (
     Phone_Number VARCHAR(15),
     Address VARCHAR(255),
     Total_Spent DECIMAL(10, 2)
+<<<<<<< HEAD
 );
 
 CREATE TABLE Branches  (
@@ -59,3 +69,6 @@ CREATE TABLE Branches  (
     Phone_Number VARCHAR(15)
 );
 
+=======
+);
+>>>>>>> 344163f5aa0464a9e1d94f4c314f97a5c377e97c
