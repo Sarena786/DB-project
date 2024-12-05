@@ -15,8 +15,6 @@ CREATE TABLE Users (
     Phone_Number VARCHAR(15)
 );
 
-ALTER TABLE users
-    ADD COLUMN Address VARCHAR(255);
     
 CREATE TABLE Products (
     Product_ID INT PRIMARY KEY,
@@ -58,7 +56,6 @@ CREATE TABLE User_Total_Spent (
     Phone_Number VARCHAR(15),
     Address VARCHAR(255),
     Total_Spent DECIMAL(10, 2)
-<<<<<<< HEAD
 );
 
 CREATE TABLE Branches  (
@@ -69,6 +66,5 @@ CREATE TABLE Branches  (
     Phone_Number VARCHAR(15)
 );
 
-=======
-);
->>>>>>> 344163f5aa0464a9e1d94f4c314f97a5c377e97c
+
+

@@ -14,9 +14,6 @@ FROM Items i
 WHERE Inventory.Product_ID = i.Product_ID
   AND Inventory.Stock_Quantity >= i.Quantity;
 
-
-
-
 SELECT b.Branch_Name, p.Product_ID, p.Price, i.Stock_Quantity --selecting the branch name, product id, price, and stock quantity
 FROM Inventory i -- see if the branch have the stock for an item
 JOIN Products p ON i.Product_ID = p.Product_ID
