@@ -34,118 +34,8 @@ SET Stock_Quantity = EXCLUDED.Stock_Quantity;
 -- Insert products in Inventory in all branches
 
 SELECT * FROM inventory;
--------------------------------------------------------------------------------------
 
-
-
--- Manage Trigger in Orders :
--- Inventory
--- Sales
--- Restock
--- Orders
-
-
-------------------------Trigger for Populating Items Table from Orders----------------------------------
-CREATE OR REPLACE FUNCTION populate_items_from_orders()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Insert a corresponding row into the Items table for each new Order
-    INSERT INTO Items (Order_ID, Product_ID, Branch_ID, Quantity, Price)
-    VALUES (
-        NEW.Order_ID,
-        NEW.Product_ID, 
-        NEW.Branch_ID,
-        1, -- Default quantity
-        (SELECT Price FROM Products WHERE Product_ID = NEW.Product_ID) -- Fetch the price
-    );
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Update the trigger
-DROP TRIGGER IF EXISTS after_order_insert_items ON Orders;
-
-CREATE TRIGGER after_order_insert_items
-AFTER INSERT ON Orders
-FOR EACH ROW
-EXECUTE FUNCTION populate_items_from_orders();
-
---------------Adjust Inventory Based on Items table-----------------------------------
-CREATE OR REPLACE FUNCTION adjust_inventory_trigger()
-RETURNS TRIGGER AS $$
-BEGIN
-    CASE TG_OP
-        WHEN 'INSERT' THEN
-            UPDATE Inventory
-            SET Stock_Quantity = Stock_Quantity - NEW.Quantity
-            WHERE Product_ID = NEW.Product_ID AND Branch_ID = NEW.Branch_ID;
-
-        WHEN 'UPDATE' THEN
-            UPDATE Inventory
-            SET Stock_Quantity = Stock_Quantity - (NEW.Quantity - OLD.Quantity)
-            WHERE Product_ID = NEW.Product_ID AND Branch_ID = NEW.Branch_ID;
-
-        WHEN 'DELETE' THEN
-            UPDATE Inventory
-            SET Stock_Quantity = Stock_Quantity + OLD.Quantity
-            WHERE Product_ID = OLD.Product_ID AND Branch_ID = OLD.Branch_ID;
-    END CASE;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS after_item_change ON Items;
-
-CREATE TRIGGER after_item_change
-AFTER INSERT OR UPDATE OR DELETE ON Items
-FOR EACH ROW
-EXECUTE FUNCTION adjust_inventory_trigger();
-
-
---------------Trigger for Inserting Sales Record on Completed Orders------------------
-
-CREATE OR REPLACE FUNCTION insert_sales_trigger()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Insert a record into the Sales table for completed orders
-    INSERT INTO Sales (Branch_ID, Product_ID, User_ID, Sale_Date, Quantity, Total_Amount)
-    VALUES (
-        NEW.Branch_ID,
-        NEW.Product_ID,
-        NEW.User_ID,
-        NEW.Order_Date,
-        1,  -- Default quantity
-        NEW.Total_Price
-    );
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-
-------------------------------------------------------------------------------
-
-
-
----------------- Restock inventory if the stock is low -----------------------
-
-INSERT INTO Restock_Orders (Branch_ID, Product_ID, Restock_Order_Date, Quantity, Status)
-SELECT Branch_ID, Product_ID, CURRENT_DATE, 50, 'Pending'
-FROM Inventory
-WHERE Stock_Quantity < 10
-  AND NOT EXISTS (
-      SELECT 1
-      FROM Restock_Orders
-      WHERE Restock_Orders.Product_ID = Inventory.Product_ID
-        AND Restock_Orders.Branch_ID = Inventory.Branch_ID
-        AND Restock_Orders.Restock_Order_Date = CURRENT_DATE
-  );
-
-------------------------------------------------------------------------------
-
-
+--Trigger before placing orders
 
 -- Place orders
 
@@ -167,8 +57,18 @@ VALUES
 SELECT * From items;
 SELECT * FROM orders;
 SELECT * FROM Sales;
-SELECT * FROM inventory;
 SELECT * FROM restock_orders;
+
+---------------------------adjusted inventory based on sales----------------------
+UPDATE Inventory
+SET Stock_Quantity = Stock_Quantity - s.Quantity
+FROM Sales s
+WHERE Inventory.Product_ID = s.Product_ID
+  AND Inventory.Branch_ID = s.Branch_ID;
+
+
+SELECT * FROM inventory;
+
 
 
 ----------------- Reset Sequence of Order_Item_ID-------------------------
