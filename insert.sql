@@ -1,3 +1,4 @@
+-- Active: 1733294799547@@dpg-ct6kb61u0jms7399gihg-a@5432
 INSERT INTO Branches (Branch_ID, Branch_Name, Location, Manager, Phone_Number)
 VALUES
     (1, 'Teddy4U Central', '123 Main St, Teddy, IL 62701', 'Alice Johnson', '123-456-7890'),
