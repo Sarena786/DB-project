@@ -1,4 +1,4 @@
--- Active: 1733124735108@@dpg-ct6kb61u0jms7399gihg-a.singapore-postgres.render.com@5432@my_database@public
+-- Active: 1733294799547@@dpg-ct6kb61u0jms7399gihg-a@5432
 Drop Table branches;
 DROP Table users;
 DROP Table products;
