@@ -38,33 +38,71 @@ EXECUTE FUNCTION populate_items_from_orders();
 CREATE OR REPLACE FUNCTION insert_sales_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Insert a record into the Sales table for completed orders
-    INSERT INTO Sales (Branch_ID, Product_ID, User_ID, Sale_Date, Quantity, Total_Amount)
-    VALUES (
-        NEW.Branch_ID,
-        NEW.Product_ID,
-        NEW.User_ID,
-        NEW.Order_Date,
-        1,  -- Default quantity
-        NEW.Total_Price
-    );
+    -- Only insert into Sales if the order status is 'Completed'
+    IF NEW.Status = 'Completed' THEN
+        -- Insert into Sales table whenever an order is completed
+        INSERT INTO Sales (Branch_ID, Product_ID, User_ID, Sale_Date, Quantity, Total_Amount)
+        VALUES (
+            NEW.Branch_ID,
+            NEW.Product_ID,
+            NEW.User_ID,
+            NEW.Order_Date,
+            1,  -- Default quantity of 1
+            NEW.Total_Price
+        );
+    END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
+
+DROP TRIGGER IF EXISTS after_order_insert ON Orders;
+
+CREATE TRIGGER after_order_insert
+AFTER INSERT ON Orders
+FOR EACH ROW
+EXECUTE FUNCTION insert_sales_trigger();
+
+
+
 ---------------- Restock inventory if the stock is low -----------------------
 
-INSERT INTO Restock_Orders (Branch_ID, Product_ID, Restock_Order_Date, Quantity, Status)
-SELECT Branch_ID, Product_ID, CURRENT_DATE, 50, 'Pending'
-FROM Inventory
-WHERE Stock_Quantity < 10
-  AND NOT EXISTS (
-      SELECT 1
-      FROM Restock_Orders
-      WHERE Restock_Orders.Product_ID = Inventory.Product_ID
-        AND Restock_Orders.Branch_ID = Inventory.Branch_ID
-        AND Restock_Orders.Restock_Order_Date = CURRENT_DATE
-  );
+CREATE OR REPLACE FUNCTION auto_restock_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if stock quantity is less than 10
+    IF NEW.Stock_Quantity < 10 THEN
+        -- Insert into Restock_Orders if no restock order exists for today
+        INSERT INTO Restock_Orders (Branch_ID, Product_ID, Restock_Order_Date, Quantity, Status)
+        SELECT NEW.Branch_ID, NEW.Product_ID, CURRENT_DATE, 50, 'Pending'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM Restock_Orders
+            WHERE Restock_Orders.Product_ID = NEW.Product_ID
+            AND Restock_Orders.Branch_ID = NEW.Branch_ID
+            AND Restock_Orders.Restock_Order_Date = CURRENT_DATE
+        );
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger to call the auto_restock_trigger function after updating Inventory
+DROP TRIGGER IF EXISTS after_inventory_update ON Inventory;
+
+CREATE TRIGGER after_inventory_update
+AFTER UPDATE ON Inventory
+FOR EACH ROW
+EXECUTE FUNCTION auto_restock_trigger();
+
+UPDATE Inventory
+SET Stock_Quantity = s.quantity - Stock_Quantity
+FROM restock_orders s
+WHERE Inventory.Product_ID = s.Product_ID
+  AND Inventory.Branch_ID = s.Branch_ID;
 
 ------------------------------------------------------------------------------
+SELECT * FROM inventory;
+SELECT * FROM restock_orders;

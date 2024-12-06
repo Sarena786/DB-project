@@ -101,7 +101,11 @@ CREATE TABLE Sales (
     FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
     FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
 );
-ALTER SEQUENCE sales_sale_id_seq RESTART WITH 1; 
+ALTER SEQUENCE sales_sale_id_seq RESTART WITH 1;
+ALTER TABLE Sales
+ALTER COLUMN Sale_ID SET DEFAULT nextval('sales_sale_id_seq');
+
+
 
 
 
