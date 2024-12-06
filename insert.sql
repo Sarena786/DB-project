@@ -59,6 +59,7 @@ SELECT * From items;
 SELECT * FROM orders;
 SELECT * FROM Sales;
 SELECT * FROM restock_orders;
+SELECT * FROM inventory;
 
 ---------------------------adjusted inventory based on sales----------------------
 UPDATE Inventory
@@ -84,6 +85,13 @@ DELETE FROM sales;
 DELETE FROM items;
 DELETE FROM restock_orders;
 --------------------------------------------------------------------------
+DELETE FROM User_Total_Spent
+WHERE User_ID IN (
+    SELECT u.User_ID
+    FROM Users u
+    JOIN Orders o ON u.User_ID = o.User_ID
+    GROUP BY u.User_ID
+);
 
 INSERT INTO User_Total_Spent (User_ID, Name, Email, Phone_Number, Address, Branch_ID, Total_Spent)
 SELECT 
@@ -101,4 +109,36 @@ JOIN
 GROUP BY 
     u.User_ID, u.Name, u.Email, u.Phone_Number, u.Address, o.Branch_ID;
 
+
 SELECT * FROM user_total_spent;
+
+
+INSERT INTO Payment (Order_ID, User_ID, Payment_Date, Payment_Method)
+SELECT 
+    O.Order_ID,
+    O.User_ID,
+    CURRENT_DATE, 
+    'Credit Card'
+FROM Orders O
+JOIN Users U ON O.User_ID = U.User_ID
+WHERE O.Order_ID = 1;
+
+INSERT INTO Payment (Order_ID, User_ID, Payment_Date, Payment_Method)
+SELECT 
+    O.Order_ID,
+    O.User_ID,
+    CURRENT_DATE,
+    'PayPal'
+FROM Orders O
+JOIN Users U ON O.User_ID = U.User_ID
+WHERE O.Order_ID = 2;
+
+INSERT INTO Payment (Order_ID, User_ID, Payment_Date, Payment_Method)
+SELECT 
+    O.Order_ID,
+    O.User_ID,
+    CURRENT_DATE,
+    'Bank Transfer' 
+FROM Orders O
+JOIN Users U ON O.User_ID = U.User_ID
+WHERE O.Order_ID = 2;
