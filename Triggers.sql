@@ -104,5 +104,28 @@ WHERE Inventory.Product_ID = s.Product_ID
   AND Inventory.Branch_ID = s.Branch_ID;
 
 ------------------------------------------------------------------------------
+
+-------------------------Trigger to Add Payment-------------------------------
+
+SELECT event_object_table, trigger_name, action_timing, event_manipulation
+FROM information_schema.triggers
+WHERE event_object_table = 'orders';
+
+CREATE OR REPLACE FUNCTION auto_insert_payment()
+RETURNS TRIGGER AS $$
+BEGIN
+    RAISE NOTICE 'Trigger fired for User_ID: %, Order_ID: %', NEW.User_ID, NEW.Order_ID;
+
+    INSERT INTO Payment (User_ID, Order_ID, Ordering_Date, Payment_Method)
+    VALUES (NEW.User_ID, NEW.Order_ID, NEW.Order_Date, 'Credit Card');
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+---------------------------------------------------------------------
+
+SELECT * FROM payment;
 SELECT * FROM inventory;
 SELECT * FROM restock_orders;

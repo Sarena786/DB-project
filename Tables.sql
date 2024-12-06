@@ -106,6 +106,16 @@ ALTER TABLE Sales
 ALTER COLUMN Sale_ID SET DEFAULT nextval('sales_sale_id_seq');
 
 
+CREATE TABLE Payment (
+    Payment_ID SERIAL PRIMARY KEY,           
+    Order_ID INT,                            
+    User_ID INT,                             
+    Payment_Date DATE,                                       
+    Payment_Method VARCHAR(50),              
+    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+);
+
 
 
 
