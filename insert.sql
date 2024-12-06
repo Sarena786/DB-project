@@ -106,60 +106,28 @@ EXECUTE FUNCTION adjust_inventory_trigger();
 
 --------------Trigger for Inserting Sales Record on Completed Orders------------------
 
-CREATE OR REPLACE FUNCTION adjust_inventory_trigger()
+CREATE OR REPLACE FUNCTION insert_sales_trigger()
 RETURNS TRIGGER AS $$
-DECLARE
-    old_quantity INT;
-    new_quantity INT;
 BEGIN
-    -- Handle INSERT
-    IF TG_OP = 'INSERT' THEN
-        UPDATE Inventory
-        SET Stock_Quantity = Stock_Quantity - NEW.Quantity
-        WHERE Product_ID = NEW.Product_ID AND Branch_ID = NEW.Branch_ID;
-
-    -- Handle UPDATE
-    ELSIF TG_OP = 'UPDATE' THEN
-        old_quantity := OLD.Quantity;
-        new_quantity := NEW.Quantity;
-
-        UPDATE Inventory
-        SET Stock_Quantity = Stock_Quantity - (new_quantity - old_quantity)
-        WHERE Product_ID = NEW.Product_ID AND Branch_ID = NEW.Branch_ID;
-
-    -- Handle DELETE
-    ELSIF TG_OP = 'DELETE' THEN
-        UPDATE Inventory
-        SET Stock_Quantity = Stock_Quantity + OLD.Quantity
-        WHERE Product_ID = OLD.Product_ID AND Branch_ID = OLD.Branch_ID;
-    END IF;
+    -- Insert a record into the Sales table for completed orders
+    INSERT INTO Sales (Branch_ID, Product_ID, User_ID, Sale_Date, Quantity, Total_Amount)
+    VALUES (
+        NEW.Branch_ID,
+        NEW.Product_ID,
+        NEW.User_ID,
+        NEW.Order_Date,
+        1,  -- Default quantity
+        NEW.Total_Price
+    );
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger for INSERT
-DROP TRIGGER IF EXISTS after_item_insert ON Items;
-CREATE TRIGGER after_item_insert
-AFTER INSERT ON Items
-FOR EACH ROW
-EXECUTE FUNCTION adjust_inventory_trigger();
-
--- Trigger for UPDATE
-DROP TRIGGER IF EXISTS after_item_update ON Items;
-CREATE TRIGGER after_item_update
-AFTER UPDATE ON Items
-FOR EACH ROW
-EXECUTE FUNCTION adjust_inventory_trigger();
-
--- Trigger for DELETE
-DROP TRIGGER IF EXISTS after_item_delete ON Items;
-CREATE TRIGGER after_item_delete
-AFTER DELETE ON Items
-FOR EACH ROW
-EXECUTE FUNCTION adjust_inventory_trigger();
 
 ------------------------------------------------------------------------------
+
+
 
 ---------------- Restock inventory if the stock is low -----------------------
 
@@ -216,19 +184,20 @@ DELETE FROM items;
 DELETE FROM restock_orders;
 --------------------------------------------------------------------------
 
-INSERT INTO User_Total_Spent (User_ID, Name, Email, Phone_Number, Address, Total_Spent)
+INSERT INTO User_Total_Spent (User_ID, Name, Email, Phone_Number, Address, Branch_ID, Total_Spent)
 SELECT 
     u.User_ID,
     u.Name,
     u.Email,
     u.Phone_Number,
     u.Address,
+    o.Branch_ID,
     SUM(o.Total_Price) AS Total_Spent
 FROM 
     Users u
 JOIN 
     Orders o ON u.User_ID = o.User_ID
 GROUP BY 
-    u.User_ID, u.Name, u.Email, u.Phone_Number, u.Address;
+    u.User_ID, u.Name, u.Email, u.Phone_Number, u.Address, o.Branch_ID;
 
 SELECT * FROM user_total_spent;
