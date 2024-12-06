@@ -1,8 +1,12 @@
+SELECT * FROM branches;
+SELECT * FROM Inventory;
+SELECT * FROM users;
+SELECT * FROM products;
 SELECT * FROM Orders;
 SELECT * FROM Items;
-SELECT DISTINCT Product_ID FROM Items;
-SELECT DISTINCT Product_ID FROM Inventory;
-SELECT * FROM Inventory;
+SELECT * from restock_orders;
+SELECT * FROM sales;
+SELECT * FROM user_total_spent;
 
 SELECT o.Order_ID, o.Order_Date, o.Total_Price, u.Name, u.Email
 FROM Orders o

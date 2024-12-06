@@ -48,6 +48,7 @@ CREATE TABLE Orders (
 CREATE TABLE Items (
     Order_Item_ID INT PRIMARY KEY,
     Order_ID INT,
+    Branch_ID INT,
     Product_ID INT,
     Quantity INT,
     Price DECIMAL(10, 2),
@@ -55,15 +56,19 @@ CREATE TABLE Items (
     FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
 );
 
+-- To reset, and do incrementing
+ALTER TABLE Items
+ALTER COLUMN order_item_id DROP DEFAULT, -- Remove any existing defaults
+ALTER COLUMN order_item_id ADD GENERATED ALWAYS AS IDENTITY; -- Add auto-increment
+
 CREATE TABLE Inventory (
-    Product_ID INT PRIMARY KEY,
-    Branch_ID Int,
+    Product_ID INT,
+    Branch_ID INT,
     Stock_Quantity INT,
+    PRIMARY KEY (Product_ID, Branch_ID),
     FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
-    Foreign Key (Branch_ID) REFERENCES Branches(Branch_ID)
+    FOREIGN KEY (Branch_ID) REFERENCES Branches(Branch_ID)
 );
-ALTER TABLE Inventory
-ADD CONSTRAINT unique_product_branch UNIQUE (Product_ID, Branch_ID);
 
 
 CREATE TABLE User_Total_Spent (
@@ -72,7 +77,8 @@ CREATE TABLE User_Total_Spent (
     Email VARCHAR(100),
     Phone_Number VARCHAR(15),
     Address VARCHAR(255),
-    Total_Spent DECIMAL(10, 2)
+    Total_Spent DECIMAL(10, 2),
+    Branch_ID INT
 );
 
 CREATE TABLE Restock_Orders (
@@ -85,6 +91,10 @@ CREATE TABLE Restock_Orders (
     FOREIGN KEY (Branch_ID) REFERENCES Branches(Branch_ID),
     FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
 );
+ALTER TABLE Restock_Orders ALTER COLUMN restock_order_id DROP NOT NULL;
+
+
+
 
 CREATE SEQUENCE IF NOT EXISTS sales_sale_id_seq START 1; -- Create a sequence to auto-generate Sale_ID values
 CREATE TABLE Sales (
@@ -99,6 +109,7 @@ CREATE TABLE Sales (
     FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
     FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
 );
+ALTER SEQUENCE sales_sale_id_seq RESTART WITH 1; 
 
 
 
